@@ -1,0 +1,186 @@
+package com.social.bubbles.fsquery;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+
+<<<<<<< .mine
+import com.social.bubbles.fsquery.FoursquareVenue.FoursquareHereNowResponseClass.FoursquareHereNowResponse.FoursquareHereNow;
+
+=======
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+
+import com.social.bubbles.R;
+import com.social.bubbles.Bubble.SubBubble;
+
+>>>>>>> .r53
+public class FoursquareVenue extends FoursquareObject {
+	private String name;
+	private FoursquareLocation location;
+	private FoursquareCategory[] categories;
+	public FoursquareHereNow hereNow;
+
+	private LinkedList<FoursquareSpecial> specialsList = new LinkedList<FoursquareSpecial>();
+	
+	private boolean isTrending;
+	
+	public String getName(){
+		return name;
+	}
+	
+	
+	//location getters
+	/**
+	 * example: "Adams St/Brooklyn Bridge Blvd"
+	 * @return	address of venue
+	 */
+	public String getAddress(){
+		return location.address;
+	}
+	public String getCity(){
+		return location.city;
+	}
+	public String getState(){
+		return location.state;
+	}
+	public double getLatitude(){
+		return location.lat;
+	}
+	public double getLongitude(){
+		return location.lng;
+	}
+	
+	
+	/**
+	 * returns categories the venue falls under.
+	 * a category is what kind of place this venue is
+	 * examples "Great Outdoors," "Bridges" for "Brooklyn Bridge"
+	 * 
+	 * @return categories the venue falls under
+	 */
+	public FoursquareCategory getMainCategory(){
+		for(FoursquareCategory c : categories){
+			if(c.primary){
+				return c;
+			}
+		}
+		return new FoursquareCategory();
+	}
+		
+	
+	public void setSpecials(LinkedList<FoursquareSpecial> specials) {
+		this.specialsList = specials;
+	}
+	public void addSpecial(FoursquareSpecial special) {
+		this.specialsList.add(special);
+	}
+
+	public boolean hasSpecial(){
+		return(getSpecials().isEmpty());
+	}
+	public LinkedList<FoursquareSpecial> getSpecials() {
+		return specialsList;
+	}
+
+
+	public void setTrending(boolean isTrending) {
+		this.isTrending = isTrending;
+	}
+
+
+	public boolean isTrending() {
+		return isTrending;
+	}
+	
+	//subbubbles
+	public LinkedList<SubBubble> getSubBubbles(Context context){
+		LinkedList<SubBubble> sb = new LinkedList<SubBubble>();
+		sb.add(new PostTodoSubbubble(context,name,id));
+		return sb;
+	}
+	public class PostTodoSubbubble implements SubBubble {
+		Context context;
+		String name;
+		String id;
+		public PostTodoSubbubble(Context context, String name, String id){
+			this.context = context;
+			this.name = name;
+			this.id = id;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_todo);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			String query = "venues/"+this.id+"/marktodo";
+			Bundle parameters = new Bundle();
+			parameters.putString("text","anyone want to join me at "+this.name+"?");
+			FoursquareQuery.FOURSQUARE_SEARCH.postToFoursquare(query, parameters);
+		}
+	}
+	
+	
+	
+
+
+	public static class FoursquareLocation extends FoursquareObject{
+		public String address;
+		public String city;
+		public String state;
+		public String postalCode;
+		public String country;
+		public double lat;
+		public double lng;
+		public double distance;
+	}
+	public static class FoursquareCategory extends FoursquareObject{
+		public String name="n/a";
+		public String icon = "n/a";
+		public String[] parents;
+		public boolean primary;
+	}
+	
+	public static class FoursquareHereNowResponseClass extends FoursquareObject{
+		FoursquareHereNowResponse response;
+		public static class FoursquareHereNowResponse extends FoursquareObject{
+			FoursquareHereNow hereNow;
+			
+			public static class FoursquareHereNow extends FoursquareObject{
+				public int count;
+				public FoursquareCheckin[] items;
+				
+				
+				public LinkedList<FoursquareUser> getUsers(){
+					if (count==0){
+						return new LinkedList<FoursquareUser>();
+					}
+					LinkedList<FoursquareUser> fsUsers = new LinkedList<FoursquareUser>();
+					for(FoursquareCheckin a: items){
+						FoursquareUser user = a.user;
+						user.setLastActivity(new Date(a.getCreatedAt()));
+						fsUsers.add(a.user);
+					}
+					return (fsUsers);
+				}
+				
+				
+				public static class FoursquareCheckin extends FoursquareObject{
+					public String type;
+					protected FoursquareUser user;
+					protected FoursquareVenue venue;
+		
+				}
+			}
+	}
+	
+	
+}
+}

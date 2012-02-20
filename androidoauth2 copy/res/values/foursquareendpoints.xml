@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+<string name="foursquarev2userself">https://api.foursquare.com/v2/users/self</string>
+</resources>

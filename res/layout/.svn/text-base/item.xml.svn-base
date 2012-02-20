@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content">
+  <ImageView
+  	  android:id="@+id/image"
+	  android:layout_width="80dip"
+	  android:layout_height="80dip" android:src="@drawable/stub" android:scaleType="centerCrop"/>
+  <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+	  <TextView
+	  	  android:id="@+id/text"
+	  	  android:layout_width="fill_parent"
+		  android:layout_height="wrap_content"
+		  android:layout_weight="1" android:layout_gravity="left|center_vertical" android:textSize="18dip" android:layout_marginLeft="10dip"/>
+		<TextView
+	  	  android:id="@+id/addr"
+	  	  android:layout_width="fill_parent"
+		  android:layout_height="wrap_content"
+		  android:layout_weight="1" android:layout_gravity="left|center_vertical"  android:textSize="14dip" android:layout_marginLeft="15dip"/>
+	
+		<TextView
+		
+	  	  android:id="@+id/location"
+	  	  android:layout_width="fill_parent"
+		  android:layout_height="wrap_content"
+		  android:layout_weight="1" android:layout_gravity="right|center_vertical" android:textStyle="italic" android:textSize="14dip" android:layout_marginLeft="15dip"/>
+	</LinearLayout>
+</LinearLayout>
+

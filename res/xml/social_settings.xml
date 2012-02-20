@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen 
+        xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/settings_title">
+
+    <ListPreference
+            android:key="preference_radius"
+            android:title="@string/preference_radius_title"
+            android:summary="@string/preference_radius_summary"
+            android:entries="@array/radius_names"
+            android:entryValues="@array/radius_values" />
+            
+     <ListPreference
+            android:key="preference_number_bubbles"
+            android:title="@string/preference_number_bubbles_title"
+            android:summary="@string/preference_number_bubbles_summary"
+            android:entries="@array/number_bubbles_name"
+            android:entryValues="@array/number_bubbles_values" />
+            
+      
+            
+    <PreferenceCategory android:title="Social Bubbles Info">
+
+		<PreferenceScreen android:title="CIS 350 Software Engineering"
+			android:summary="A UPENN CIS 350  Spring 2011 project by Miguel, Kai, William and Geoffrey"
+			android:key="infoSocialBubbles">
+
+			<intent android:action="android.intent.action.VIEW"
+				android:data="http://www.cis.upenn.edu" />
+		</PreferenceScreen>
+		
+	</PreferenceCategory>
+
+</PreferenceScreen>
+

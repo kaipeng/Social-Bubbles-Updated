@@ -1,0 +1,641 @@
+package com.social.bubbles.socialbubbles3;
+ 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+
+import com.social.bubbles.Bubble;
+import com.social.bubbles.Bubble.SubBubble;
+import com.social.bubbles.BubbleLauncher;
+import com.social.bubbles.BubbleManager;
+import com.social.bubbles.R;
+import com.social.bubbles.Settings;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.MediaStore.Images;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+
+
+/**
+ * @author Mike NTG
+ *Adapted from:
+ */
+ 
+/**
+ * Android Live Wallpaper painting thread Archetype
+ * @author antoine vianey
+ * GPL v3 : http://www.gnu.org/licenses/gpl-3.0.html
+ */
+public class MySystem extends Thread {
+ 
+    /** Reference to the View and the context */
+    private static SurfaceHolder surfaceHolder;
+    private Context context;
+ 
+    /** State */
+    private boolean wait;
+    private boolean run;
+ 
+    /** Dimensions */
+    private int width;
+    private int height;
+ 
+    /** Time tracking */
+    private long previousTime;
+    private long currentTime;
+	
+	/** Option display **/
+	private boolean option;
+	
+	/** particle point **/
+	//Initial position
+	private float pBaseX;
+	private float pBaseY;
+	// Position during translation
+	// private float pX;
+	// private float pY;
+	
+	/** Particle **/
+	private MyParticle mParticle;
+	private  LinkedList<MyParticle> mParticleSystem;
+	private  LinkedList<MyParticle> mSubParticleSystem;	
+
+	private Random ran;
+	
+	private int particleIndex;
+	
+	private int numBubbles;
+	
+	Bitmap img;
+	
+	Resources res;
+	
+	SocialBubblesService socialEngine;
+	
+    CreateBubbleHandler createBubbleHandler;
+	
+	
+
+ 
+    public MySystem(SurfaceHolder surfaceHolder, 
+            Context context, int width, int nBubbles, Resources res, SocialBubblesService se) {
+    	
+    	
+    	createBubbleHandler = new CreateBubbleHandler();
+    	BubbleLauncher.setCreateBubbleHandler(createBubbleHandler);
+    	
+    	// keep a reference of the context and the surface
+        // the context is needed if you want to inflate
+        // some resources from your livewallpaper .apk
+        this.surfaceHolder = surfaceHolder;
+        this.context = context;
+        // don't animate until surface is created and displayed
+        this.wait = true;
+        
+        //gets the resource reference
+        this.res= res;
+        ran= new Random();
+        
+        //it will help to launch secondary apps
+        socialEngine= se;
+        
+        //getting the dimensions
+        this.width= surfaceHolder.getSurfaceFrame().right;
+        this.height= surfaceHolder.getSurfaceFrame().bottom;
+        
+	    
+		
+		//Creating the particle system
+       	mParticleSystem= new LinkedList<MyParticle>();
+       	mSubParticleSystem= new LinkedList<MyParticle>();
+
+		//Initializes Sub BUBBLES
+		initializeSubBubbles();	
+		//CREATES THE INITIAL BUBBLES
+		createInitialBubbles();
+		
+		
+		
+		option= false;
+		
+		// Initial Position of particle
+		pBaseX= width/2;
+		pBaseY= 0;
+		// Position during translation
+		// private int pX;
+		// private int pY;
+		
+		particleIndex = -1;
+		
+		
+		numBubbles = nBubbles;
+		
+//		if(mParticleSystem.size()>= 2){
+//			p= new MyParticle(150,0,0xFFFFFFFF,width,width, "bubble");
+//			mParticleSystem.add(p);
+//		}
+		
+		
+    }
+    
+	private void initializeSubBubbles(){
+		/**
+	    img= BitmapFactory.decodeResource(res, R.drawable.sub_call);
+		mSubParticleSystem.add( new MyParticle(0,0,0xFFFFFFFF,img.getWidth(),img.getHeight(), "call",img));
+		img= BitmapFactory.decodeResource(res, R.drawable.sub_sms);		// res.getDrawable(R.drawable.bubble);
+		mSubParticleSystem.add( new MyParticle(0,0,0xFFFFFFFF,img.getWidth(),img.getHeight(), "sms",img));
+
+		img= BitmapFactory.decodeResource(res, R.drawable.sub_facebook);		// res.getDrawable(R.drawable.bubble);
+		mSubParticleSystem.add( new MyParticle(0,0,0xFFFFFFFF,img.getWidth(),img.getHeight(), "facebook",img));
+
+		img= BitmapFactory.decodeResource(res, R.drawable.sub_todo);		// res.getDrawable(R.drawable.bubble);
+		mSubParticleSystem.add( new MyParticle(0,0,0xFFFFFFFF,img.getWidth(),img.getHeight(), "todo",img));
+		**/
+	}
+	
+<<<<<<< .mine
+   
+=======
+	private void updateSubBubbles(Bubble selectedBubble){
+		//TODO implement this
+		mSubParticleSystem.clear();
+		//test code
+		//img= BitmapFactory.decodeResource(res, R.drawable.sub_todo);		// res.getDrawable(R.drawable.bubble);
+		//mSubParticleSystem.add( new MyParticle(0,0,0xFFFFFFFF,img.getWidth(),img.getHeight(), "todo",img));
+		
+		if (selectedBubble==null){
+			return;
+		}
+		//test
+		LinkedList<SubBubble> subBubbles = selectedBubble.getSubBubbles(context,this.socialEngine);
+		for (SubBubble sb : subBubbles){
+			Bitmap image = sb.getImage();
+			mSubParticleSystem.add(new MyParticle(0,0,0xFFFFFFFF,image.getWidth(),image.getHeight(),"custom",image,sb));
+		}
+	}
+
+    
+>>>>>>> .r83
+ 
+    /**
+     * Pauses the live wallpaper animation
+     */
+    public void pausePainting() {
+        this.wait = true;
+        synchronized(this) {
+            this.notify();
+        }
+    }
+ 
+    /**
+     * Resume the live wallpaper animation
+     */
+    public void resumePainting() {
+        this.wait = false;
+        synchronized(this) {
+            this.notify();
+        }
+    }
+ 
+    /**
+     * Stop the live wallpaper animation
+     */
+    public void stopPainting() {
+        this.run = false;
+        synchronized(this) {
+            this.notify();
+        }
+    }
+ 
+    long lastTouched;
+    @Override
+    public void run() {
+        this.run = true;
+        Canvas c = null;
+        while (run) {
+            try {
+                c = this.surfaceHolder.lockCanvas(null);
+                synchronized (this.surfaceHolder) {
+					
+                    currentTime = System.currentTimeMillis();
+                    //if (!option){
+                    	updatePhysics(mParticleSystem);
+                    //}
+                    if (!option){
+                    	doDraw(c, mParticleSystem);
+                    }
+                    
+                    //Draw only if a particle was touched
+                    if (option){
+                    	MyParticle touchParticle = mParticleSystem.get(particleIndex); //---------------------------------------------------
+                    	doDrawTouchPoint(c,touchParticle);
+					
+						doDrawOptions(c,touchParticle.name, mSubParticleSystem);
+						doCheckIfOptions(c,touchParticle,touchParticle.name, mSubParticleSystem);
+					}
+					if(currentTime-previousTime> 20){ // not sure if the  time is correct------------------------
+						option= false;
+					}
+                    previousTime = currentTime;
+                }
+            } finally {
+                if (c != null) {
+                    this.surfaceHolder.unlockCanvasAndPost(c);
+                }
+            }
+            // pause if no need to animate
+            synchronized (this) {
+                if (wait) {
+                    try {
+                        wait();
+                    } catch (Exception e) {}
+                }
+            }
+			
+			// check if schedule next drawing here-.--------------------
+        }
+    }
+ 
+   
+
+	
+
+	/**
+     * Invoke when the surface dimension change
+     */
+    public void setSurfaceSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+        synchronized(this) {
+            this.notify();
+        }
+    }
+ 
+    // ===========================================================
+	// Do Methods
+	// ===========================================================
+    
+    /**
+     * Invoke while the screen is touched
+     */
+    public void doTouchEvent(MotionEvent event) {
+        // handle the event here
+        // if there is something to animate
+        // then wake up
+        this.wait = false;
+        int index= -1;
+		
+		// modificar las opciones de display entre option---------------------------------
+		
+        
+        //gets the index of the particle touched on screen, returns -1 otherwise
+        index= isInParticleSystem(event.getX(),event.getY(), mParticleSystem);
+        //if touched a particle then index is >= 0
+        option= index >= 0;
+        
+
+        //move the selected particle around
+        if (option){
+	    	synchronized(this.mParticleSystem){
+	    		MyParticle touchParticle = mParticleSystem.get(index);
+//				p.setX(event.getX());   // it does not center the picture.
+//				p.setY(event.getY());
+	    		
+	    		//it centers the picture in this point
+	    		touchParticle.setX(event.getX()-(touchParticle.getWidth())/2);   
+	    		touchParticle.setY(event.getY()-(touchParticle.getHeight()/2));
+				
+				if(System.currentTimeMillis()-lastTouched> 500){ // not sure if the  time is correct------------------------
+			    	updateSubBubbles(touchParticle.bubble);
+
+					configureSubParticles(event.getX(), event.getY(), this.mSubParticleSystem);
+				}
+			}
+        }
+        lastTouched = System.currentTimeMillis();
+
+        
+        particleIndex= index;
+		
+//		//updating the base position  //only when animating the particle to restore position------------------
+//		synchronized(this){
+//			pBaseX= event.getX();
+//		}
+//		
+//		synchronized(this){
+//			pBaseY= event.getY();
+//		}
+//		
+//        synchronized(this) {
+//            notify();
+//        }
+    }
+ 
+	private void updateSubBubbles(Bubble selectedBubble){
+		//TODO implement this
+		mSubParticleSystem.clear();
+		//test code
+		//img= BitmapFactory.decodeResource(res, R.drawable.sub_todo);		// res.getDrawable(R.drawable.bubble);
+		//mSubParticleSystem.add( new MyParticle(0,0,0xFFFFFFFF,img.getWidth(),img.getHeight(), "todo",img));
+		
+		if (selectedBubble==null){
+			return;
+		}
+		//test
+		LinkedList<SubBubble> subBubbles = selectedBubble.getSubBubbles(context);
+		for (SubBubble sb : subBubbles){
+			Bitmap image = sb.getImage();
+			mSubParticleSystem.add(new MyParticle(0,0,0xFFFFFFFF,image.getWidth(),image.getHeight(),"custom",image,sb));
+		}
+	}
+
+	private void configureSubParticles(float x, float y, LinkedList<MyParticle> subParticles) {
+
+		
+		float baseY;
+		float orientation;
+		if(y > height/2){
+			baseY = y-200;
+			orientation = +1;
+		}else{
+			baseY = y+200;
+			orientation = -1;
+		}
+		Log.d("Configure SubParticles: ", "Base Y = " + baseY + " Orientation = " + orientation);
+		for(int i=0; i< subParticles.size(); i++){
+			int newX = width/subParticles.size() * i;
+			int newY = (int) (baseY + 20*orientation*Math.abs(i+1-subParticles.size()/2.0)*Math.abs(i+1-subParticles.size()/2.0));
+			subParticles.get(i).setX(newX);
+			subParticles.get(i).setY(newY);
+			Log.d("Configure SubParticles", "New Y = " + newY + " New X = " + newX);
+		}
+	}
+
+	/**
+     * Do the actual drawing stuff : DRAWAS ALL THE PARTICLES
+     */
+    private void doDraw(Canvas canvas, LinkedList<MyParticle> pSystem) {
+//    	Resources res = 
+//    	Bitmap bm= img.overlayBubble(Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888));
+		 Paint paint = new Paint();
+		 //paint.setColor(mParticle.getColor());
+		 paint.setColor(0xABCD0000);
+		 canvas.drawColor(0xff000000);
+		 
+		 
+		 //CALL AND DISPLAY NEXT BUBBLE HERE
+		 
+		 for (MyParticle p: (LinkedList<MyParticle>) pSystem.clone()){
+			 //canvas.drawCircle(p.getX(), p.getY(), p.getWidth(), paint); 
+			 //canvas.drawRect(p.getX(), p.getY(), p.getX()+p.getWidth(), p.getY()+p.getHeight(), paint); // draws the bounding bound, or touch area of the object
+			 canvas.drawBitmap(p.getImg(), p.getX(), p.getY(), new Paint());
+			 
+		 }
+		 
+		 
+		 
+		 
+	}
+    
+    //DRAWS THE SUB-BUBBLES
+    private void doDrawOptions(Canvas c, String bubbleId, LinkedList<MyParticle> subBubblesSystem) {
+    	Paint paint = new Paint();
+		paint.setColor(Color.WHITE);
+		paint.setTextAlign(Paint.Align.CENTER);
+		paint.setTextSize(20);
+
+		//c.drawColor(0xff000000);
+		
+		//DRAW SELECTED BUBBLE DESCRIPTION
+		if(bubbleId!=null){
+			if(BubbleManager.getBubble(bubbleId)!=null)
+				c.drawText(BubbleManager.getBubble(bubbleId).getDescription(), 150, 20, paint);
+			else
+				c.drawText(bubbleId, 150, 20, paint);
+		}
+
+		//DRAW THE SUB BUBBLES HERE
+		for(MyParticle subBubble: subBubblesSystem){
+			c.drawBitmap(subBubble.getImg(), subBubble.getX(), subBubble.getY(), new Paint());
+		}
+	}
+    
+    private void doDrawTouchPoint(Canvas c, MyParticle tp){
+		Paint paint = new Paint();
+		paint.setColor(tp.getColor());
+		c.drawColor(0xff000000);
+		
+		//c.drawCircle(tp.getX(), tp.getY(), tp.getWidth(), paint);
+		c.drawBitmap(tp.getImg(), tp.getX(), tp.getY(), new Paint());
+	}
+    
+    //EXECUTES THE OPTION ACTION: ON DROP
+    private long lastDropped;
+    private void doCheckIfOptions(Canvas c, MyParticle p, String bubbleId, LinkedList<MyParticle> subBubblesSystem) {
+    	//boolean result= false;
+    	Paint paint = new Paint();
+		paint.setColor(p.getColor());
+		paint.setTextSize(34);
+		
+		//result= isInSystem(p.getX(),p.getY(),op1);
+		
+		//CHECKS WHICH OPTION TO EXECUTE AND LAUNCHS IT
+		
+//		if(isInSystem(p.getX(),p.getY(),op1)){  //does not apply to pictures
+		for (MyParticle subParticle : subBubblesSystem){
+			if (isInSystem(p.getX()+(p.getWidth()/2),p.getY()+(p.getHeight()/2),subParticle)){
+				//TODO implement this
+				if (subParticle!=null && System.currentTimeMillis()-lastDropped > 1000){
+					subParticle.subbubble.onClick();
+					this.configureSubParticles(subParticle.x, subParticle.y, this.mSubParticleSystem);
+					lastDropped = System.currentTimeMillis();
+					break;
+				}
+			}
+		}
+		/**
+		if(isInSystem(p.getX()+(p.getWidth()/2),p.getY()+(p.getHeight()/2),subBubblesSystem.get(0))){
+//			c.drawColor(0xff000000);
+//			c.drawText("I am calling", 150, 400, paint);
+			String url = "http://www.facebook.com";
+    	    Intent i = new Intent(Intent.ACTION_VIEW);
+    	    i.setData(Uri.parse(url));
+    	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	    socialEngine.startActivity(i);
+			
+		    
+		}else if (isInSystem(p.getX()+(p.getWidth()/2),p.getY()+(p.getHeight()/2),subBubblesSystem.get(1))){
+			c.drawColor(0xff000000);
+			c.drawText("I am texting", 150, 400, paint);
+		}
+		**/
+	}
+    
+    public static void displayText(String text){
+    	Paint paint = new Paint();
+		paint.setColor(Color.WHITE);
+		paint.setTextAlign(Paint.Align.CENTER);
+		paint.setTextSize(20);
+		Canvas c = surfaceHolder.lockCanvas(null);
+		c.drawText(text, 150, 400, paint);
+    }
+    
+    // ===========================================================
+	// Physics
+	// ===========================================================
+ 
+    /**
+     * Update the animation, sprites or whatever.
+     * If there is nothing to animate set the wait
+     * attribute of the thread to true
+     */
+    private void updatePhysics(LinkedList<MyParticle> mParticleSystem2) {
+        // if nothing was updated :
+        // this.wait = true;
+    	
+    	for (MyParticle p : mParticleSystem2){
+    	
+	    	//float x= mParticle.getX();
+	    	float y= p.getY();
+	    	
+	    	//x++;
+	    	y++;
+	    	if (y> height ){
+	    		p.setY(pBaseY);
+	    		p.setX(ran.nextInt(Math.max(1, width-p.getWidth())));
+	    	}else {
+	    		p.setY(y);
+	    	}
+    	}
+    	
+//    	float x= mParticle.getX();
+//    	float y= mParticle.getY();
+//    	
+//    	//x++;
+//    	y++;
+//    	if (y> height ){
+//    		mParticle.setY(pBaseY);
+//    		mParticle.setX(ran.nextInt(width));
+//    	}else {
+//    		mParticle.setY(y);
+//    	}
+    	
+    }
+	
+	
+	
+    // ===========================================================
+	// additional Methods
+	// ===========================================================
+
+	// changes the particle width and height
+	public void setWidth(int w) {
+		for (MyParticle p : this.mParticleSystem){
+			p.setHeight(w);
+			p.setWidth(w);
+		}
+	}
+	
+	//checks if the touch position is within a particle
+    private boolean isInSystem(float x, float y, MyParticle p) {
+		boolean result= false;
+		
+		result = p.isInParticle(x, y);
+		
+		return result;
+	}
+    
+    //checks if the touch position is within a particle
+    private int isInParticleSystem(float x, float y, LinkedList<MyParticle> mParticleSystem2) {
+		int index= -1;
+		for (MyParticle p: mParticleSystem2){
+			if (p.isInParticle(x, y)){
+				return mParticleSystem2.indexOf(p);
+			}
+		}		
+		return index;
+	}
+ 
+    //creates initial set of particles
+    public void createInitialBubbles (){
+    	MyParticle p;
+	    //loading images to the array
+		int []initialBubbleImages= new int[4];
+		initialBubbleImages[0]= R.drawable.mike;
+		initialBubbleImages[1]= R.drawable.geoffrey;
+		initialBubbleImages[2]= R.drawable.kai;
+		initialBubbleImages[3]= R.drawable.wei;
+	    
+		for (int i= 0; i<initialBubbleImages.length; i++){
+			img= BitmapFactory.decodeResource(res, initialBubbleImages[i]);
+
+    		int w= ran.nextInt(Math.max(1, width-150));
+			int h= ran.nextInt(Math.max(1, height-150));
+			p= new MyParticle(w,h,0xFFFFFFFF,img.getWidth(),img.getHeight(), "initial"+i,img);
+			Log.d("New Particle Properties: ", "X="+p.getX()+ " Y="+p.getY() + " Width= "+p.getWidth() + " Height="+p.getHeight() + " Name=" + p.getName());
+
+			this.mParticleSystem.add(p);   		
+		}
+    	
+//    	//createInitBubbles(this.mParticleSystem,n);
+//    	//createInitBubbles(n);
+//    	MyParticle p;
+//    	mParticleSystem.clear();
+//    	for (int i= 0; i<n; i++){
+//    		int w= 100;//ran.nextInt(width);
+//			int h= 100;//ran.nextInt(height);
+//			img= BitmapFactory.decodeResource(res, images[i]);
+//			p= new MyParticle(w,h,0xFFFFFFFF,width,width, "bubble",img);
+//    		this.mParticleSystem.add(p);   		
+//    	}
+    }
+    
+    //by kai
+    //Create a bubble based on a particular ID with an random initial position
+    public void createBubble(String id){
+    	MyParticle p;
+		Bitmap pic = BubbleLauncher.getImage(id, BubbleManager.cache.get(id).getType());
+		Bubble bubble = BubbleManager.getBubble(id);
+
+    		int w= ran.nextInt(Math.max(1, width-pic.getHeight()));
+			int h= ran.nextInt(Math.max(1, height-pic.getWidth()));
+			p= new MyParticle(w,h,0xFFFFFFFF,pic.getWidth(),pic.getHeight(), id, pic, bubble);
+			Log.d("New Particle Properties: ", "X="+p.getX()+ " Y="+p.getY() + " Width= "+p.getWidth() + " Height="+p.getHeight() + " Name=" + p.getName());
+
+    		this.mParticleSystem.add(p);
+    	if(this.mParticleSystem.size() > Settings.Bubble.DISPLAY_QUEUE_SIZE)
+    		this.mParticleSystem.remove();
+    }
+    
+    public class CreateBubbleHandler extends Handler {
+        private static final int NEW_BUBBLE = 0;
+
+		public void handleMessage(Message msg) {
+                switch (msg.what) {
+                case NEW_BUBBLE:
+	                   createBubble((String) msg.obj);      
+                }  
+		}
+    }
+
+    
+    public void onChangeNumberBubbles(int num){
+    	Settings.Bubble.DISPLAY_QUEUE_SIZE = num;
+    	//get num bubbles
+    	BubbleManager.queueQualifyingBubbles();
+    }
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, Main!</string>
+        <string name="service_name">Bubbles Live-Wallpaper</string>
+    <string name="service_description">Bubbles floating on your home-screen.</string>
+    
+    <string name="app_name">Social Bubbles App</string>
+        <string name="app_settings_name">Social Bubbles Settings</string>
+        <string name="app_wallpaper_name">Social Bubbles Wallpaper</string>
+    
+    <string name="app_physics_name">Physics</string>
+    <string name="wallpaper">Social Bubbles Mike</string>
+    <string name="settings_title">Social Bubbles LiveWallpaper settings</string>
+    <string name="description">Sample LiveWallpaper from Social Bubble</string>
+    <string name="preference_radius_title">Configure radius</string>
+    <string name="preference_radius_summary">Touch tracking radius and duration</string>
+    <string name="preference_number_bubbles_title">Number of bubbles</string>
+    <string name="preference_number_bubbles_summary">Choose the number of bubbles to display</string>
+</resources>

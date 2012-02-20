@@ -1,0 +1,652 @@
+package com.social.bubbles.fsquery;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+
+import com.bubbles.location.MyLocation;
+import com.social.bubbles.fsquery.FoursquareUser.FoursquareContact;
+import com.social.bubbles.fsquery.FoursquareUser.OpenTwitterProfile;
+import com.social.bubbles.fsquery.FoursquareUser.SendEmail;
+import com.social.bubbles.fsquery.FoursquareVenue.FoursquareHereNowResponseClass.FoursquareHereNowResponse.FoursquareHereNow;
+
+import com.social.bubbles.Main;
+import com.social.bubbles.R;
+
+import android.app.SearchManager;
+import android.content.ContentProviderOperation;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
+
+import com.social.bubbles.Bubble.SubBubble;
+
+public class FoursquareVenue extends FoursquareObject {
+	private String name;
+	private FoursquareLocation location;
+	private FoursquareCategory[] categories;
+	public FoursquareHereNow hereNow;
+	private FoursquareContact contact;
+
+
+	private LinkedList<FoursquareSpecial> specialsList = new LinkedList<FoursquareSpecial>();
+	
+	private boolean isTrending;
+	
+	public String getName(){
+		return name;
+	}
+	
+	
+	//location getters
+	/**
+	 * example: "Adams St/Brooklyn Bridge Blvd"
+	 * @return	address of venue
+	 */
+	public String getAddress(){
+		return location.address;
+	}
+	public String getCity(){
+		return location.city;
+	}
+	public String getState(){
+		return location.state;
+	}
+	public double getLatitude(){
+		return location.lat;
+	}
+	public double getLongitude(){
+		return location.lng;
+	}
+	
+	
+	/**
+	 * returns categories the venue falls under.
+	 * a category is what kind of place this venue is
+	 * examples "Great Outdoors," "Bridges" for "Brooklyn Bridge"
+	 * 
+	 * @return categories the venue falls under
+	 */
+	public FoursquareCategory getMainCategory(){
+		for(FoursquareCategory c : categories){
+			if(c.primary){
+				return c;
+			}
+		}
+		return new FoursquareCategory();
+	}
+		
+	public int getHereNow(){
+		if(hereNow!=null)
+			return hereNow.count;
+		return 0;
+	}
+	
+	public void setSpecials(LinkedList<FoursquareSpecial> specials) {
+		this.specialsList = specials;
+	}
+	public void addSpecial(FoursquareSpecial special) {
+		this.specialsList.add(special);
+	}
+
+	public boolean hasSpecial(){
+		return(!getSpecials().isEmpty());
+	}
+	public LinkedList<FoursquareSpecial> getSpecials() {
+		return specialsList;
+	}
+
+
+	public void setTrending(boolean isTrending) {
+		this.isTrending = isTrending;
+	}
+
+
+	public boolean isTrending() {
+		return isTrending;
+	}
+	
+	//subbubbles
+	@Override
+	public LinkedList<SubBubble> getSubBubbles(Context context){
+		Log.d("Get SubBubbles : Overriden!", "");
+		LinkedList<SubBubble> sb = new LinkedList<SubBubble>();
+		sb.add(new PostTodoSubbubble(context,name,id));
+		sb.add(new VenueOpenFoursquareProfile(context,id, this.getName()));
+		sb.add(new PostCheckinSubbubble(context,name,this.getId(), this.getLat(), this.getLon()));
+		try{
+			if(this.getLat()!=0){
+				sb.add(new MapObject(context,this.name,this.getLat(), this.getLon() ));
+			}	
+		}catch(NullPointerException e){e.printStackTrace();}
+		try{
+			if(this.getContact().phone!=null){
+				sb.add(new VenueCall(context,id,this.getName(), this.getContact().phone));
+			}	
+		}catch(NullPointerException e){e.printStackTrace();}
+		try{
+			if(this.contact.email!=null && this.contact.phone==null){
+				sb.add(new SendEmail(context,id,this.getContact().email, this.getName()));
+			}
+			if(this.contact.twitter!=null){
+				sb.add(new OpenTwitterProfile(context,this.name, this.contact.twitter));
+			}
+		}catch(NullPointerException e){e.printStackTrace();}
+		
+<<<<<<< .mine
+		sb.add(new VenueLookup(context,this.name, this.getCity()));
+
+		
+		
+=======
+		sb.add(new AddVenueToContactsList(context, this.name, this.id, this.contact.phone, this.contact.email, service));
+		
+>>>>>>> .r158
+		return sb;
+	}
+	
+	//FUnctions
+	public void setSubBubbles(Context context ){
+		subBubbles = getSubBubbles(context);
+	}
+	public class SendEmail implements SubBubble{
+		Context context;
+		 ;
+		String name;
+		String id;
+		String email;
+		public SendEmail(Context context, String id, String email, String name ){
+			this.context = context;
+			this.id = id;
+			this.email = email;
+			
+			this.name = name;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_email);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			if(this.name==null)
+				this.name = "";
+        	Main.showToast("Texting " + this.name + " @ " + this.email, false);
+
+			Intent i = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + this.email));
+    	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	    context.startActivity(i);
+		}
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Text " + name;
+		}	
+	}
+	public class OpenTwitterProfile implements SubBubble{
+		Context context;
+		 ;
+		String name;
+		String handle;
+		public OpenTwitterProfile(Context context, String name, String handle ){
+			this.context = context;
+			this.handle = handle;
+			
+			this.name = name;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_twitter);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+        	Main.showToast("Opening " + this.name + "'s Twitter profile.", false);
+
+			String url = "http://mobile.twitter.com/"+handle;
+    	    Intent i = new Intent(Intent.ACTION_VIEW);
+    	    i.setData(Uri.parse(url));
+    	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	    context.startActivity(i);
+		}
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Open " + name + "'s Twitter";
+		}	
+	}
+
+	public class PostCheckinSubbubble implements SubBubble {
+		Context context;
+		String name;
+		String id;
+		 ;
+		double lat, lon;
+		public PostCheckinSubbubble(Context context, String name, String id, double lat, double lon ){
+			this.context = context;
+			this.name = name;
+			this.id = id;
+			
+			this.lat = lat;
+			this.lon = lon;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_checkin);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+        	Main.showToast("Checking you into " + this.name+ ".", false);
+
+			Log.d("SubBubble Action: ", "Todo OnClick for: " + name + " at " + id);
+			String query = "checkins/add";
+			Bundle parameters = new Bundle();
+            //params.putByteArray("picture", imgData);
+//			String specialText = "";
+//				if(hasSpecial())
+//					specialText = "And they have a special: " + getSpecials().getFirst().getMessage();
+			parameters.putString("shout","I just checked into " + this.name+  " using SocialBubbles - a beautiful new app from Penn's CIS350!");
+			parameters.putString("broadcast","public,facebook,twitter");
+			parameters.putString("ll",this.lat+","+this.lon);
+			parameters.putString("venueId",this.id);
+
+			FoursquareQuery.FOURSQUARE_SEARCH.postToFoursquare(query, parameters);
+		}
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Check In to " + name + "";
+		}	
+	}
+	public class PostTodoSubbubble implements SubBubble {
+		Context context;
+		String name;
+		String id;
+		 ;
+		public PostTodoSubbubble(Context context, String name, String id ){
+			this.context = context;
+			this.name = name;
+			this.id = id;
+			
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_todo);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+        	Main.showToast("Adding " + this.name+ " to my Todo List.", false);
+
+			Log.d("SubBubble Action: ", "Todo OnClick for: " + name + " at " + id);
+			String query = "venues/"+this.id+"/marktodo";
+			Bundle parameters = new Bundle();
+            //params.putByteArray("picture", imgData);
+			String specialText = "";
+				if(hasSpecial())
+					specialText = "And they have a special: " + getSpecials().getFirst().getMessage();
+			parameters.putString("text","Anyone want to join me at "+this.name+"? " + specialText +" - Posted by SocialBubbles");
+			FoursquareQuery.FOURSQUARE_SEARCH.postToFoursquare(query, parameters);
+		}
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Add " + name + " to my Todo List";
+		}	
+	}
+	public class VenueOpenFoursquareProfile implements SubBubble{
+		Context context;
+		 ;
+		String name;
+		String id;
+		public VenueOpenFoursquareProfile(Context context, String id, String name ){
+			this.context = context;
+			this.id = id;
+			
+			this.name = name;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_foursquare);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			if(this.name==null)
+				this.name = "";
+        	Main.showToast("Opening " + this.name + "'s Foursquare profile.", false);
+
+			String url = "http://foursquare.com/venue/"+id;
+    	    Intent i = new Intent(Intent.ACTION_VIEW);
+    	    i.setData(Uri.parse(url));
+    	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	    context.startActivity(i);
+		}
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Open " + name + "'s Profile";
+		}	
+	}
+	public class VenueCall implements SubBubble{
+		Context context;
+		 ;
+		String name;
+		String id;
+		String phone;
+		public VenueCall(Context context, String id, String name, String phone ){
+			this.context = context;
+			this.id = id;
+			this.phone = phone;
+			this.name = name;
+			
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_call);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			if(this.name==null)
+				this.name = "";
+        	Main.showToast("Dialing " + this.name + " @ " + this.phone, false);
+
+			String url = "tel:"+phone;
+    	    Intent i = new Intent(Intent.ACTION_DIAL);
+    	    i.setData(Uri.parse(url));
+    	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	    context.startActivity(i);
+		}
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Call " + name;
+		}	
+	}
+	public class VenueLookup implements SubBubble{
+		Context context;
+		String name;
+		String city;
+		public VenueLookup(Context context, String name, String city ){
+			this.context = context;
+			
+			this.name = name;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_search);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			if(this.name==null)
+				this.name = "";
+        	Main.showToast("Looking up " + this.name + " " + city, false);
+
+    	    Intent i = new Intent(Intent.ACTION_SEARCH);
+    	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	    i.putExtra(SearchManager.QUERY, this.name + " " + city);
+
+    	    context.startActivity(i);
+		}
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Searching for " + name;
+		}	
+	}
+	public static class MapObject implements SubBubble{
+		Context context;
+		String name;
+		double lat, lon;
+		String address;
+		
+		public MapObject(Context context, String name, double lat, double lon){
+			this.context = context;
+			this.lat = lat;
+			this.lon = lon;
+			this.name = name;
+		}
+		public MapObject(Context context, String name, String address){
+			this.context = context;
+
+			this.name = name;
+			this.address=address;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_map);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			if(this.name==null)
+				this.name = "";
+        	Main.showToast("Mapping " + this.name, false);
+    	    Intent i = new Intent(Intent.ACTION_VIEW);
+
+        	if(address!=null)
+        	{
+    			String url = "geo:0,0?z=18&q="+this.name+address;
+        	    i.setData(Uri.parse(url));
+        	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	}else{
+			String url = "geo:"+lat+","+lon+"?z=18&q="+this.name;
+    	    i.setData(Uri.parse(url));
+    	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	}
+
+    	    context.startActivity(i);
+		}
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Map " + name;
+		}	
+	}
+
+	//end subbubbles
+	
+	public static class FoursquareLocation extends FoursquareObject{
+		public String address;
+		public String city;
+		public String state;
+		public String postalCode;
+		public String country;
+		public double lat;
+		public double lng;
+		public double distance;
+	}
+	public static class FoursquareCategory extends FoursquareObject{
+		public String name="n/a";
+		public String icon = "n/a";
+		public String[] parents;
+		public boolean primary;
+	}
+	
+	public static class FoursquareHereNowResponseClass extends FoursquareObject{
+		FoursquareHereNowResponse response;
+		public static class FoursquareHereNowResponse extends FoursquareObject{
+			FoursquareHereNow hereNow;
+			
+			public static class FoursquareHereNow extends FoursquareObject{
+				public int count;
+				public FoursquareCheckin[] items;
+				
+				public LinkedList<FoursquareUser> getUsers(){
+					if (count==0){
+						return new LinkedList<FoursquareUser>();
+					}
+					LinkedList<FoursquareUser> fsUsers = new LinkedList<FoursquareUser>();
+					for(FoursquareCheckin a: items){
+						FoursquareUser user = a.user;
+						user.setLastActivity(new Date(a.getCreatedAt()));
+						fsUsers.add(a.user);
+					}
+					return (fsUsers);
+				}
+				
+				
+				public static class FoursquareCheckin extends FoursquareObject{
+					public String type;
+					protected FoursquareUser user;
+					protected FoursquareVenue venue;
+		
+				}
+			}
+	}
+	
+	
+	}
+	
+	public class AddVenueToContactsList implements SubBubble{
+		Context context;
+		Service service;
+		String name;
+		String id;
+		String phone;
+		String email;
+		String company;
+		
+		
+		public AddVenueToContactsList(Context context, String company, String id, String phone, String email, Service service){
+			this.context = context;
+			this.id = id;
+			this.phone = phone;
+			this.service = service;
+			this.company = company;
+			this.email = email;	
+		}
+		
+		@Override
+		public Bitmap getImage() {
+			return BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_contact);
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			// create a new name
+			String DisplayName = company;
+			 String WorkNumber = phone;
+			 String emailID = email;
+
+
+            ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                    .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+                    .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+                    .build());
+
+            //------------------------------------------------------ Names
+            if(DisplayName != null)
+            {
+                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE,
+                                ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, DisplayName).build());
+            }                       
+
+            //------------------------------------------------------ Work Numbers
+            if(WorkNumber != null)
+            {
+                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE,
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, WorkNumber)
+                        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, 
+                                ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
+                        .build());
+            }
+
+            //------------------------------------------------------ Email
+            if(emailID != null)
+            {
+                 ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                            .withValue(ContactsContract.Data.MIMETYPE,
+                                    ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                            .withValue(ContactsContract.CommonDataKinds.Email.DATA, emailID)
+                            .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                            .build());
+            }
+
+            //------------------------------------------------------ Organization
+            if(!company.equals(""))
+            {
+                ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE,
+                                ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, company)
+                        .withValue(ContactsContract.CommonDataKinds.Organization.TYPE, ContactsContract.CommonDataKinds.Organization.TYPE_WORK)
+                        .withValue(ContactsContract.CommonDataKinds.Organization.TYPE, ContactsContract.CommonDataKinds.Organization.TYPE_WORK)
+                        .build());
+            }
+
+            // Asking the Contact provider to create a new contact                  
+            try 
+            {
+                context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+            } 
+            catch (Exception e) 
+            {               
+                e.printStackTrace();
+            }
+		}
+
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Add "+ name + " to contacts list.";
+		}
+		
+	}
+	
+	public void setGeo(){
+		try{
+			lat = this.getLatitude();
+			lon = this.getLongitude();
+		} catch(Exception e){}
+	}
+
+
+	public FoursquareContact getContact() {
+		return contact;
+	}
+}

@@ -1,0 +1,172 @@
+package com.social.bubbles.fbquery;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.bubbles.location.MyLocation;
+import com.social.bubbles.Main;
+import com.social.bubbles.R;
+import com.social.bubbles.Bubble.SubBubble;
+import com.social.bubbles.fsquery.FoursquareVenue.PostTodoSubbubble;
+import com.social.bubbles.fsquery.FoursquareVenue.VenueOpenFoursquareProfile;
+
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.net.Uri;
+
+
+public class FacebookUser extends FacebookObject {
+	private String name;
+	private String gender;
+	private FacebookLocation location;
+
+	
+	//supplementary
+	private FacebookEventData events;
+	//private FacebookCheckinData facebookCheckinData;
+	
+	private FacebookCheckin currentCheckin = null;
+	
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	public void setGender(String gender){
+		this.gender = gender;
+	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public String getGender(){
+		return gender;
+	}
+
+//	public void setFacebookEventData(FacebookEventData facebookEventData) {
+//		this.facebookEventData = facebookEventData;
+//	}
+//
+	public FacebookEventData getFacebookEventData() {
+		return events;
+	}
+//
+//	public void setFacebookCheckinData(FacebookCheckinData facebookCheckinData) {
+//		this.facebookCheckinData = facebookCheckinData;
+//	}
+//	public FacebookCheckinData getFacebookCheckinData() {
+//		return facebookCheckinData;
+//	}
+	public void setCurrentCheckin(FacebookCheckin currentCheckin){
+		this.currentCheckin = currentCheckin;
+	}
+	public FacebookCheckin getCurrentCheckin() {
+		return currentCheckin;
+	}
+
+	public void setLocation(FacebookLocation location) {
+		this.location = location;
+	}
+
+	public FacebookLocation getLocation() {
+		return location;
+	}
+
+	//subbubbles
+	public LinkedList<SubBubble> getSubBubbles(Context context, Service service){
+		LinkedList<SubBubble> sb = new LinkedList<SubBubble>();
+		sb.add(new UserOpenFacebookProfile(context,id,this.getName(), service));
+		return sb;
+	}
+	public class UserOpenFacebookProfile implements SubBubble{
+		Context context;
+		Service service;
+		String name;
+		String id;
+		public UserOpenFacebookProfile(Context context, String id, String name, Service service){
+			this.context = context;
+			this.id = id;
+			this.service = service;
+			this.name = name;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_facebook);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			boolean fbInstalled = false;
+			PackageManager packageManager = context.getPackageManager();
+			List<ApplicationInfo> installedApps = packageManager.getInstalledApplications(0);
+			for (ApplicationInfo ai : installedApps){
+				if (ai.packageName=="com.facebook.katata"){
+					fbInstalled = true;
+				}
+			}
+			Main.showToast("Opening " + this.name + "'s Facebook profile.", false);
+			if (fbInstalled){
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setClassName("com.facebook.katana", "com.facebook.katana.ProfileTabHostActivity");
+				intent.putExtra("extra_user_id", id);
+				context.startActivity(intent);
+			}else {
+				String url = "http://m.facebook.com/profile.php?id="+id;
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse(url));
+				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				context.startActivity(i);
+			}
+		}
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return "Open " + this.name + "'s Profile";
+		}
+	}
+	public class AddFacebookUserToContactsSubBubbles implements SubBubble {
+		Context context;
+		Service service;
+		String name;
+		String id;
+		public AddFacebookUserToContactsSubBubbles(Context context, String id, String name, Service service){
+			this.context = context;
+			this.id = id;
+			this.service = service;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public String getActionDescription() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
+	
+	public void setGeo(){
+			try{
+				lat = this.getCurrentCheckin().getLocation().getLatitude();
+				lon = this.getCurrentCheckin().getLocation().getLongitude();
+			} catch(Exception e){}
+		}
+}

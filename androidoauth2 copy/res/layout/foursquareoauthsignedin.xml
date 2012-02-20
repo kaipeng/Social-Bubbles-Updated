@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:background="#00BAE1">
+
+	<ImageView android:layout_width="wrap_content" android:id="@+id/FoursquareLogo"
+		android:layout_above="@+id/SignInButton" android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true" android:src="@drawable/foursquarelogo"></ImageView>
+
+	<TextView android:text="Id: " android:id="@+id/IdLabel"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:textColor="#000000" android:textSize="10sp"
+		android:layout_below="@+id/ClearButton"></TextView>
+
+	<TextView android:text="" android:id="@+id/IdValue"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textColor="#000000" android:layout_below="@+id/IdLabel"></TextView>
+
+	<Button android:text="Get Foursquare Profile" android:id="@+id/GetProfileButton"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:layout_below="@+id/FoursquareLogo"></Button>
+
+	<TextView android:text="Name: " android:id="@+id/NameLabel"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:textColor="#000000" android:textSize="10sp"
+		android:layout_below="@+id/IdValue"></TextView>
+
+	<TextView android:text="" android:id="@+id/NameValue"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textColor="#000000" android:layout_below="@+id/NameLabel"></TextView>
+
+	<TextView android:text="Email Address: " android:id="@+id/EmailLabel"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:textColor="#000000" android:textSize="10sp"
+		android:layout_below="@+id/NameValue"></TextView>
+
+	<TextView android:text="" android:id="@+id/EmailValue"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textColor="#000000" android:layout_below="@+id/EmailLabel"></TextView>
+
+
+	<TextView android:text="City: " android:id="@+id/CityLabel"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:textColor="#000000" android:textSize="10sp"
+		android:layout_below="@+id/EmailValue"></TextView>
+
+	<Button android:text="Clear OAuth Tokens" android:id="@+id/ClearButton"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:layout_below="@+id/GetProfileButton"></Button>
+		
+	<TextView android:text="" android:id="@+id/CityValue"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textColor="#000000" android:layout_below="@+id/CityLabel"></TextView>
+
+	<TextView android:text="Lat, Lon: " android:id="@+id/GeoLabel"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:textColor="#000000" android:textSize="10sp"
+		android:layout_below="@+id/CityValue"></TextView>
+	<TextView android:text="" android:id="@+id/GeoValue"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textColor="#000000" android:layout_below="@+id/GeoLabel"></TextView>
+
+</RelativeLayout>
+
+

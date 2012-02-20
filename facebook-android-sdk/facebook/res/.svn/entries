@@ -1,0 +1,46 @@
+10
+
+dir
+155
+svn+ssh://kaipeng@seas.upenn.edu/home1/g/geoch/Shared/SocialBubbles/facebook-android-sdk/facebook/res
+svn+ssh://kaipeng@seas.upenn.edu/home1/g/geoch/Shared/SocialBubbles
+
+
+
+2011-04-18T01:55:40.191370Z
+14
+kaipeng
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+31ab2192-66bd-11e0-93e4-116082009e44
+
+values
+dir
+
+drawable
+dir
+
+drawable-hdpi
+dir
+
+drawable-ldpi
+dir
+
+drawable-mdpi
+dir
+
+layout
+dir
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="google-gson-1.6/gson-1.6.jar"/>
+	<classpathentry kind="lib" path="andenginelibs/andengine.jar"/>
+	<classpathentry kind="lib" path="andenginelibs/andenginelivewallpaperextension.jar"/>
+	<classpathentry kind="lib" path="andenginelibs/andenginephysicsbox2dextension.jar"/>
+<<<<<<< .mine
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+=======
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="src" path="com_facebook_android_src"/>
+>>>>>>> .r91
+	<classpathentry kind="src" path="androidoauth2_src"/>
+<<<<<<< .mine
+	<classpathentry kind="src" path="com_facebook_android_src"/>
+=======
+>>>>>>> .r91
+	<classpathentry kind="output" path="bin"/>
+</classpath>

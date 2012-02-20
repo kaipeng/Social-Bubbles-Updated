@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!-- 
+
+**********Default strings file.  Uncomment and edit ***********
+
+	<string name="consumerKey">&lt;Put consumer key here of your app here&gt;	</string>
+	<string name="consumerSecret">&lt;Put consumer secret of your app here&gt;</string>
+	<string name="accessTokenUrl">&lt;https://foo.com/access_token&gt;</string>
+	<string name="authenticationUrl">https://foo.com/authenticate</string>
+	<string name="oauthCallbackUri">androidoauth2://oauthcallback</string>
+	<string name="resultingActivityPackageName">com.frublin.androidoauth2</string>
+	<string name="resultingActivityClassName">com.frublin.androidoauth2.examples.FoursquareOAuth2Activity
+	</string>
+	<string name="touch">true</string>
+	<string name="accessTokenPreferenceName">accessTokenPref</string>
+
+-->
+
+</resources>

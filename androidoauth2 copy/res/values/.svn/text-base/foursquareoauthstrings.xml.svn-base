@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="consumerKey">ATQGGR2GKJ2ZSA10DB4QO4REBEN4ZK1D254OHWTUOYGPUFU4</string>
+	<string name="consumerSecret">SFG3J4EEKGEJGKKSSJ4LQRFLZPT3RHKH5PNDRIQAEA2E2CYY</string>
+	<string name="accessTokenUrl">https://foursquare.com/oauth2/access_token</string>
+	<string name="authenticationUrl">https://foursquare.com/oauth2/authenticate</string>
+	<string name="oauthCallbackUri">androidoauth2://oauthcallback</string>
+	<string name="resultingActivityPackageName">com.frublin.androidoauth2</string>
+	<string name="resultingActivityClassName">com.frublin.androidoauth2.examples.FoursquareOAuth2Activity
+	</string>
+	<string name="touch">true</string>
+	<string name="accessTokenPreferenceName">accessTokenPref</string>
+	<string name="androidOauthLogTag">AndroidOAuth2</string>
+</resources>

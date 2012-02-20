@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	android:versionCode="1"
+	android:versionName="1.0" package="com.frublin.androidoauth2">
+	<application android:icon="@drawable/icon" android:label="AndroidOAuth2" android:debuggable="true">
+		<activity android:name="AndroidOAuthActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="androidoauth2" android:host="oauthcallback" />
+			</intent-filter>
+		</activity>
+				
+		<activity android:name="FoursquareOAuth2Activity">
+			<intent-filter>
+			</intent-filter>
+		</activity>
+		
+	</application>
+	<uses-sdk android:minSdkVersion="7" />
+	<uses-permission android:name="android.permission.INTERNET" />
+
+</manifest> 

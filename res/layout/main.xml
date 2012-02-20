@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <!-- the top padding accounts for the status bar area -->
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="15dip"
+        >
+
+    <ImageButton android:id="@+id/LaunchViewerButton"
+    		android:scaleType="fitCenter"
+    	android:background="@android:color/transparent"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_weight=".3"
+        android:src="@drawable/social_bubbles_banner"
+        android:contentDescription="List Launcher"
+        />
+	     <ImageButton android:id="@+id/FullscreenButton"
+    	android:scaleType="fitCenter"
+    	android:background="@android:color/transparent"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_weight=".4"
+        android:src="@drawable/fullscreen_icon"
+        android:contentDescription="Fullscreen Button"  
+		android:paddingRight="20dip"
+                    
+              
+        />
+	
+	
+	
+	        <include layout="@layout/service_buttons" />
+	
+	
+</LinearLayout>
+
+</FrameLayout>

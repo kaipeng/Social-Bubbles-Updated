@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.social.bubbles"
+      android:versionCode="1"
+      android:versionName="1.0"
+                android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
+      >
+    <application android:icon="@drawable/icon" android:label="@string/app_name">
+        <activity android:name=".Main"
+                  android:label="@string/app_name"
+                android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
+                  >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.frublin.androidoauth2.AndroidOAuthActivity" android:label="Foursquare Login">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="androidoauth2" android:host="oauthcallback" />
+			</intent-filter>
+		</activity>
+		
+		 <activity android:name="com.social.lazylist.BubbleList" android:label="Discovered in Last 10 Minutes"
+		                 android:theme="@android:style/Theme.Translucent"
+		 >
+			<intent-filter>
+			</intent-filter>
+		</activity>
+		
+		<service android:name="com.social.bubbles.DownloadManager" android:label="Social Bubbles Downloader">
+			<intent-filter>
+			</intent-filter>
+		</service>
+		
+		
+                <service 
+                        android:name="com.social.bubbles.socialbubbles3.SocialBubblesService"
+                        android:enabled="true"
+                        android:icon="@drawable/icon"
+                        android:label="@string/app_wallpaper_name"
+                        android:permission="android.permission.BIND_WALLPAPER"
+                                        android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
+                        >
+                        <intent-filter android:priority="1" >
+                                <action android:name="android.service.wallpaper.WallpaperService" />
+                        </intent-filter>
+                        <meta-data 
+                                android:name="android.service.wallpaper" 
+                                android:resource="@xml/social" />
+                </service>
+                <activity 
+                        android:label="@string/app_settings_name" 
+                        android:name="com.social.bubbles.socialbubbles3.SocialBubblesSetting" 
+                        android:theme="@android:style/Theme.Light.WallpaperSettings"
+                        android:exported="true">
+                        
+                 </activity>
+                 
+
+    </application>
+    
+           
+                 
+               
+    
+    
+    
+    <uses-feature android:name="android.software.live_wallpaper" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+	<uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+	<uses-permission android:name="android.permission.WRITE_CONTACTS" />
+	
+
+    
+<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+	<uses-permission android:name="android.permission.READ_CONTACTS"/>
+	
+
+</manifest> 

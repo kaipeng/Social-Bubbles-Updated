@@ -1,0 +1,226 @@
+package com.social.bubbles.fsquery;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+
+import com.social.bubbles.fsquery.FoursquareVenue.FoursquareHereNowResponseClass.FoursquareHereNowResponse.FoursquareHereNow;
+
+import com.social.bubbles.R;
+
+import android.app.Service;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.social.bubbles.Bubble.SubBubble;
+
+public class FoursquareVenue extends FoursquareObject {
+	private String name;
+	private FoursquareLocation location;
+	private FoursquareCategory[] categories;
+	public FoursquareHereNow hereNow;
+
+	private LinkedList<FoursquareSpecial> specialsList = new LinkedList<FoursquareSpecial>();
+	
+	private boolean isTrending;
+	
+	public String getName(){
+		return name;
+	}
+	
+	
+	//location getters
+	/**
+	 * example: "Adams St/Brooklyn Bridge Blvd"
+	 * @return	address of venue
+	 */
+	public String getAddress(){
+		return location.address;
+	}
+	public String getCity(){
+		return location.city;
+	}
+	public String getState(){
+		return location.state;
+	}
+	public double getLatitude(){
+		return location.lat;
+	}
+	public double getLongitude(){
+		return location.lng;
+	}
+	
+	
+	/**
+	 * returns categories the venue falls under.
+	 * a category is what kind of place this venue is
+	 * examples "Great Outdoors," "Bridges" for "Brooklyn Bridge"
+	 * 
+	 * @return categories the venue falls under
+	 */
+	public FoursquareCategory getMainCategory(){
+		for(FoursquareCategory c : categories){
+			if(c.primary){
+				return c;
+			}
+		}
+		return new FoursquareCategory();
+	}
+		
+	public int getHereNow(){
+		if(hereNow!=null)
+			return hereNow.count;
+		return 0;
+	}
+	
+	public void setSpecials(LinkedList<FoursquareSpecial> specials) {
+		this.specialsList = specials;
+	}
+	public void addSpecial(FoursquareSpecial special) {
+		this.specialsList.add(special);
+	}
+
+	public boolean hasSpecial(){
+		return(!getSpecials().isEmpty());
+	}
+	public LinkedList<FoursquareSpecial> getSpecials() {
+		return specialsList;
+	}
+
+
+	public void setTrending(boolean isTrending) {
+		this.isTrending = isTrending;
+	}
+
+
+	public boolean isTrending() {
+		return isTrending;
+	}
+	
+	//subbubbles
+	public LinkedList<SubBubble> getSubBubbles(Context context, Service service){
+		LinkedList<SubBubble> sb = new LinkedList<SubBubble>();
+		sb.add(new PostTodoSubbubble(context,name,id,service));
+		sb.add(new VenueOpenFoursquareProfile(context,id,service));
+		return sb;
+	}
+	public class PostTodoSubbubble implements SubBubble {
+		Context context;
+		String name;
+		String id;
+		Service service;
+		public PostTodoSubbubble(Context context, String name, String id, Service service){
+			this.context = context;
+			this.name = name;
+			this.id = id;
+			this.service = service;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_todo);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			Log.d("SubBubble Action: ", "Todo OnClick for: " + name + " at " + id);
+			String query = "venues/"+this.id+"/marktodo";
+			Bundle parameters = new Bundle();
+            //params.putByteArray("picture", imgData);
+
+			parameters.putString("text","Anyone want to join me at "+this.name+"? - Posted by SocialBubbles");
+			FoursquareQuery.FOURSQUARE_SEARCH.postToFoursquare(query, parameters);
+		}
+	}
+	public class VenueOpenFoursquareProfile implements SubBubble{
+		Context context;
+		Service service;
+		String name;
+		String id;
+		public VenueOpenFoursquareProfile(Context context, String id, Service service){
+			this.context = context;
+			this.id = id;
+			this.service = service;
+		}
+		@Override
+		public Bitmap getImage() {
+			// TODO Auto-generated method stub
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(), R.drawable.sub_foursquare);
+			return image;
+		}
+
+		@Override
+		public void onClick() {
+			// TODO Auto-generated method stub
+			String url = "http://foursquare.com/venue/"+id;
+    	    Intent i = new Intent(Intent.ACTION_VIEW);
+    	    i.setData(Uri.parse(url));
+    	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	    context.startActivity(i);
+		}
+		
+	}
+	
+	
+
+
+	public static class FoursquareLocation extends FoursquareObject{
+		public String address;
+		public String city;
+		public String state;
+		public String postalCode;
+		public String country;
+		public double lat;
+		public double lng;
+		public double distance;
+	}
+	public static class FoursquareCategory extends FoursquareObject{
+		public String name="n/a";
+		public String icon = "n/a";
+		public String[] parents;
+		public boolean primary;
+	}
+	
+	public static class FoursquareHereNowResponseClass extends FoursquareObject{
+		FoursquareHereNowResponse response;
+		public static class FoursquareHereNowResponse extends FoursquareObject{
+			FoursquareHereNow hereNow;
+			
+			public static class FoursquareHereNow extends FoursquareObject{
+				public int count;
+				public FoursquareCheckin[] items;
+				
+				
+				public LinkedList<FoursquareUser> getUsers(){
+					if (count==0){
+						return new LinkedList<FoursquareUser>();
+					}
+					LinkedList<FoursquareUser> fsUsers = new LinkedList<FoursquareUser>();
+					for(FoursquareCheckin a: items){
+						FoursquareUser user = a.user;
+						user.setLastActivity(new Date(a.getCreatedAt()));
+						fsUsers.add(a.user);
+					}
+					return (fsUsers);
+				}
+				
+				
+				public static class FoursquareCheckin extends FoursquareObject{
+					public String type;
+					protected FoursquareUser user;
+					protected FoursquareVenue venue;
+		
+				}
+			}
+	}
+	
+	
+}
+}

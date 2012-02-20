@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+       <!-- Pretty hint text, and maxLines -->
+    <EditText android:id="@+id/search_box" 
+            android:background="#C0FFFFFF"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="start typing to filter"
+        android:inputType="text"
+        android:maxLines="1"/>
+    <ListView
+        android:id="@+id/list"
+        android:background="#CC000000"
+        
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" 
+        android:layout_weight="1"/>
+    <ProgressBar
+	    android:layout_width="fill_parent" 
+	                	android:background="@android:color/transparent"
+	    
+	    android:layout_height="wrap_content" 
+	    style="?android:attr/progressBarStyleHorizontal"
+	    visibility="invisible"
+	    android:id="@+id/progress_bar"
+	    android:max="1000"/>
+	    
+	    
+
+    <Button
+        android:id="@+id/button1"
+        
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+                 android:textColor="@android:color/white"
+        
+        android:text="Refresh Bubbles List and Wallpaper"/>
+    <Button
+        android:id="@+id/button2"
+        
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+         android:textColor="@android:color/white"
+        android:text="Launch Live Wallpaper Picker"/>
+
+</LinearLayout>

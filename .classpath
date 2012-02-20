@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/google-gson-1.6/gson-1.6-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/google-gson-1.6/gson-1.6.jar"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/andengineexamples/lib/andenginephysicsbox2dextension.jar"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/andengineexamples/lib/andenginelivewallpaperextension.jar"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/andengineexamples/lib/andengine.jar"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="src" path="com_facebook_android_src"/>
+	<classpathentry kind="src" path="androidoauth2_src"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/SVN/SocialBubbles/lib/andenginephysicsbox2dextension.jar"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/SVN/SocialBubbles/lib/andenginelivewallpaperextension.jar"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/SVN/SocialBubbles/lib/andengine.jar"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/google-gson-1.6/gson-1.6-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/kai/Documents/workspace/google-gson-1.6/gson-1.6.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
